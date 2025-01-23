@@ -13,7 +13,6 @@ const Player = () => {
   const [subscribeKeys, getKeys] = useKeyboardControls();
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const { rapier, world } = useRapier();
-
   useEffect(() => {
     const handleOrientation = (event) => {
       const { beta, gamma } = event;
@@ -43,10 +42,13 @@ const Player = () => {
 
   useEffect(() => {
     console.log(tilt);
-    
+    const impulse = { x: 0, y: 0, z: 0 };
+    const torque = { x: 0, y: 0, z: 0 };
+
     if (body.current) {
-      const velocity = new Vector3(tilt.x, 0, 0).multiplyScalar(5); // Only left and right movement
-      body.current.setLinvel(velocity);
+      impulse.x += tilt.x * 5;
+      torque.z = -tilt.x * 5;
+      body.current.applyImpulse(impulse);
     }
   }, [tilt]);
 
@@ -161,6 +163,10 @@ const Player = () => {
 
     state.camera.position.copy(smoothCameraPosition);
     state.camera.lookAt(smoothCameraTarget);
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      state.camera.rotation.set(0, 0, Math.PI / 2);
+    }
 
     /**
      * Phases
