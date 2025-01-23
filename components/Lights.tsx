@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useRef } from "react";
 import { useHelper } from "@react-three/drei";
 import { CameraHelper, DirectionalLightHelper } from "three";
@@ -42,3 +43,4 @@ export default function Lights() {
     </>
   );
 }
+

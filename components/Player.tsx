@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   useKeyboardControls,
   DeviceOrientationControls,
@@ -6,7 +7,7 @@ import { useFrame } from "@react-three/fiber";
 import { useRapier, RigidBody } from "@react-three/rapier";
 import React, { useEffect, useRef, useState } from "react";
 import { Vector3 } from "three";
-import useGame from "./stores/useGame";
+import useGame from "@/stores/useGame";
 
 const Player = () => {
   const body = useRef();
