@@ -21,9 +21,6 @@ const Player = () => {
         x: gamma / 90,
         y: beta / 90,
       });
-      console.log(beta, gamma);
-
-      console.log(tilt);
     };
     if (typeof DeviceMotionEvent.requestPermission === "function") {
       DeviceMotionEvent.requestPermission()
@@ -43,6 +40,15 @@ const Player = () => {
       window.removeEventListener("deviceorientation", handleOrientation);
     };
   }, []);
+
+  useEffect(() => {
+    console.log(tilt);
+    
+    if (body.current) {
+      const velocity = new Vector3(tilt.x, 0, tilt.y).multiplyScalar(5); // Adjust the multiplier as needed
+      body.current.setLinvel(velocity);
+    }
+  }, [tilt]);
 
   const jump = () => {
     const origin = body.current.translation();
