@@ -47,8 +47,8 @@ const Player = () => {
     const torque = { x: 0, y: 0, z: 0 };
 
     if (body.current) {
-      impulse.x = tilt.y * 0.2;
-      torque.z = -tilt.y * 0.2;
+      impulse.x = tilt.y * 0.1;
+      torque.z = -tilt.y * 0.4;
       body.current.applyImpulse(impulse);
     }
   }, [tilt]);
