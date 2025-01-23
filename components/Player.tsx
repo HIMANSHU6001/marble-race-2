@@ -71,7 +71,7 @@ const Player = () => {
     );
 
     body.current.applyImpulse(impulse);
-    body.current.applyTorque(torque);
+    body.current.applyTorqueImpulse(torque);
   }, [tilt]);
 
   const reset = () => {
