@@ -16,16 +16,15 @@ const Player = () => {
 
   useEffect(() => {
     const handleOrientation = (event) => {
-      console.log(event);
-
       const { beta, gamma } = event;
       setTilt({
         x: gamma / 90,
         y: beta / 90,
       });
+
+      console.log(tilt);
     };
-    console.log(window);
-    
+
     window.addEventListener("deviceorientation", handleOrientation);
 
     return () => {
