@@ -45,7 +45,7 @@ const Player = () => {
     console.log(tilt);
     
     if (body.current) {
-      const velocity = new Vector3(tilt.x, 0, tilt.y).multiplyScalar(5); // Adjust the multiplier as needed
+      const velocity = new Vector3(tilt.x, 0, 0).multiplyScalar(5); // Only left and right movement
       body.current.setLinvel(velocity);
     }
   }, [tilt]);
