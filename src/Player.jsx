@@ -21,9 +21,21 @@ const Player = () => {
         x: gamma / 90,
         y: beta / 90,
       });
+      console.log(beta, gamma);
 
       console.log(tilt);
     };
+    if (typeof DeviceMotionEvent.requestPermission === "function") {
+      DeviceMotionEvent.requestPermission()
+        .then((response) => {
+          if (response === "granted") {
+            console.log("Permission granted for device orientation");
+          } else {
+            console.log("Permission denied");
+          }
+        })
+        .catch(console.error);
+    }
 
     window.addEventListener("deviceorientation", handleOrientation);
 
