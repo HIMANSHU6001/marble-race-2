@@ -1,8 +1,5 @@
 // @ts-nocheck
-import {
-  useKeyboardControls,
-  DeviceOrientationControls,
-} from "@react-three/drei";
+import { DeviceOrientationControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRapier, RigidBody } from "@react-three/rapier";
 import React, { useEffect, useRef, useState } from "react";
@@ -11,7 +8,6 @@ import useGame from "@/stores/useGame";
 
 const Player = () => {
   const body = useRef();
-  const [subscribeKeys, getKeys] = useKeyboardControls();
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const { rapier, world } = useRapier();
   useEffect(() => {
@@ -53,18 +49,6 @@ const Player = () => {
     }
   }, [tilt]);
 
-  const jump = () => {
-    const origin = body.current.translation();
-    origin.y -= 0.31;
-    const direction = { x: 0, y: -1, z: 0 };
-    const rapierWorld = world;
-
-    const ray = new rapier.Ray(origin, direction);
-    const hit = rapierWorld.castRay(ray, 10, true);
-    if (hit.timeOfImpact < 0.15 && body.current)
-      body.current.applyImpulse({ x: 0, y: 0.5, z: 0 });
-  };
-
   const reset = () => {
     body.current.setTranslation({ x: 0, y: 0, z: 0 });
     body.current.setLinvel({ x: 0, y: 0, z: 0 });
@@ -75,6 +59,26 @@ const Player = () => {
   const end = useGame((state) => state.end);
   const blocksCount = useGame((state) => state.blocksCount);
   const restart = useGame((state) => state.restart);
+  const forward = useGame((state) => state.forward);
+  const backward = useGame((state) => state.backward);
+  const rightward = useGame((state) => state.rightward);
+  const leftward = useGame((state) => state.leftward);
+  const jump = useGame((state) => state.jump);
+  const setControl = useGame((state) => state.setControl);
+
+  useEffect(() => {
+    if (jump) {
+      setControl("jump", false);
+      const origin = body.current.translation();
+      origin.y -= 0.31;
+      const direction = { x: 0, y: -1, z: 0 };
+      const rapierWorld = world;
+      const ray = new rapier.Ray(origin, direction);
+      const hit = rapierWorld.castRay(ray, 10, true);
+      if (hit.timeOfImpact < 0.15 && body.current)
+        body.current.applyImpulse({ x: 0, y: 0.5, z: 0 });
+    }
+  }, [jump]);
 
   useEffect(() => {
     const unsubscribePhase = useGame.subscribe(
@@ -86,23 +90,25 @@ const Player = () => {
       }
     );
 
-    const unsubscribeJump = subscribeKeys(
-      (state) => state.jump,
-      (value) => {
-        if (value) {
-          jump();
-        }
-      }
-    );
-
-    const unsubscribeAny = subscribeKeys(() => {
+    window.addEventListener("keydown", (e) => {
       start();
+      if (e.code === "KeyW") setControl("forward", true);
+      if (e.code === "KeyA") setControl("leftward", true);
+      if (e.code === "KeyS") setControl("backward", true);
+      if (e.code === "KeyD") setControl("rightward", true);
+      if (e.code === "Space") setControl("jump", true);
+    });
+    window.addEventListener("keyup", (e) => {
+      if (e.code === "KeyW") setControl("forward", false);
+      if (e.code === "KeyA") setControl("leftward", false);
+      if (e.code === "KeyS") setControl("backward", false);
+      if (e.code === "KeyD") setControl("rightward", false);
     });
 
     return () => {
       unsubscribePhase();
-      unsubscribeJump();
-      unsubscribeAny();
+      window.removeEventListener("keydown", (e) => {});
+      window.removeEventListener("keyup", (e) => {});
     };
   }, []);
 
@@ -114,7 +120,6 @@ const Player = () => {
      * Controls
      */
     if (!body.current) return;
-    const { forward, backward, leftward, rightward } = getKeys();
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
 
@@ -137,7 +142,6 @@ const Player = () => {
       impulse.x += impulseStrength;
       torque.z = -torqueStrength;
     }
-
     body.current.wakeUp();
     body.current.applyImpulse(impulse);
     body.current.applyTorqueImpulse(torque);
@@ -165,7 +169,6 @@ const Player = () => {
     state.camera.position.copy(smoothCameraPosition);
     state.camera.lookAt(smoothCameraTarget);
     const isMobile = window.innerWidth < 768;
-
 
     /**
      * Phases

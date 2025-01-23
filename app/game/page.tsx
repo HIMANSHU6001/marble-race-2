@@ -1,6 +1,5 @@
 "use client";
 import { Canvas } from "@react-three/fiber";
-import { KeyboardControls } from "@react-three/drei";
 import Experience from "@/components/Experience";
 import Interface from "@/components/Interface";
 
@@ -8,15 +7,7 @@ import React from "react";
 
 const page = () => {
   return (
-    <KeyboardControls
-      map={[
-        { keys: ["KeyW", "ArrowUp"], name: "forward" },
-        { keys: ["KeyS", "ArrowDown"], name: "backward" },
-        { keys: ["KeyA", "ArrowLeft"], name: "leftward" },
-        { keys: ["KeyD", "ArrowRight"], name: "rightward" },
-        { keys: ["Space"], name: "jump" },
-      ]}
-    >
+    <>
       <Canvas
         shadows
         camera={{
@@ -29,7 +20,7 @@ const page = () => {
         <Experience />
       </Canvas>
       <Interface />
-    </KeyboardControls>
+    </>
   );
 };
 
