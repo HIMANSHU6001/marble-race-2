@@ -164,9 +164,7 @@ const Player = () => {
     state.camera.position.copy(smoothCameraPosition);
     state.camera.lookAt(smoothCameraTarget);
     const isMobile = window.innerWidth < 768;
-    if (isMobile) {
-      state.camera.rotation.set(0, 0, Math.PI / 2);
-    }
+
 
     /**
      * Phases
