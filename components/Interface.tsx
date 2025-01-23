@@ -98,12 +98,10 @@ const Interface = () => {
         className="absolute left-0 w-full h-screen grid grid-cols-2"
       >
         <div
-          className="border-2 border-red-500"
           onTouchStart={() => setControl("backward", true)}
           onTouchEnd={() => setControl("backward", false)}
         ></div>
         <div
-          className="border-2 border-blue-500"
           onTouchStart={() => setControl("forward", true)}
           onTouchEnd={() => setControl("forward", false)}
         ></div>
