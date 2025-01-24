@@ -37,26 +37,7 @@ const Player = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!body.current) return;
 
-    const impulse = { x: 0, y: 0, z: 0 };
-    const torque = { x: 0, y: 0, z: 0 };
-
-    const impulseStrength = 0.6;
-    const torqueStrength = 0.2;
-
-    if (tilt.x > 0.1) {
-      impulse.x -= impulseStrength;
-      torque.z = +torqueStrength;
-    }else if (tilt.x < -0.1) {
-      impulse.x += impulseStrength;
-      torque.z = -torqueStrength;
-    }
-
-    body.current.applyImpulse(impulse);
-    body.current.applyTorqueImpulse(torque);
-  }, [tilt]);
 
   const reset = () => {
     body.current.setTranslation({ x: 0, y: 0, z: 0 });
@@ -131,6 +112,12 @@ const Player = () => {
     if (!body.current) return;
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
+
+    /**
+     * Tilt controls
+     */
+    setControl("leftward", tilt.y < -0.1);
+    setControl("rightward", tilt.y > 0.1);
 
     const impulseStrength = 0.6 * delta;
     const torqueStrength = 0.2 * delta;
