@@ -37,38 +37,22 @@ const Player = () => {
     };
   }, []);
 
-  const dampingFactor = 0.9; // Damping factor for smoother motion
-  const tiltSensitivity = 0.1; // Sensitivity for impulse
-  const torqueSensitivity = 0.4; // Sensitivity for torque
-
   useEffect(() => {
     if (!body.current) return;
 
-    // Smooth transition using damping
-    const smoothedImpulse = { x: 0, y: 0, z: 0 };
-    const smoothedTorque = { x: 0, y: 0, z: 0 };
+    const impulse = { x: 0, y: 0, z: 0 };
+    const torque = { x: 0, y: 0, z: 0 };
 
-    // Calculate target impulse and torque
-    const targetImpulse = { x: tilt.y * tiltSensitivity, y: 0, z: 0 };
-    const targetTorque = { x: 0, y: 0, z: -tilt.y * torqueSensitivity };
+    const impulseStrength = 0.6;
+    const torqueStrength = 0.2;
 
-    // Interpolate to smooth out abrupt changes
-    smoothedImpulse.x =
-      smoothedImpulse.x * dampingFactor + targetImpulse.x * (1 - dampingFactor);
-    smoothedTorque.z =
-      smoothedTorque.z * dampingFactor + targetTorque.z * (1 - dampingFactor);
-
-    // Apply impulse and torque
-    const impulse = new Vector3(
-      smoothedImpulse.x,
-      smoothedImpulse.y,
-      smoothedImpulse.z
-    );
-    const torque = new Vector3(
-      smoothedTorque.x,
-      smoothedTorque.y,
-      smoothedTorque.z
-    );
+    if (tilt.x > 0.1) {
+      impulse.x -= impulseStrength;
+      torque.z = +torqueStrength;
+    }else if (tilt.x < -0.1) {
+      impulse.x += impulseStrength;
+      torque.z = -torqueStrength;
+    }
 
     body.current.applyImpulse(impulse);
     body.current.applyTorqueImpulse(torque);

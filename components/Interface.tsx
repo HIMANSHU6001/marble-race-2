@@ -93,15 +93,16 @@ const Interface = () => {
 
       {/* Mobile controls */}
       <div
-        onClick={() => setControl("jump", true)}
         onContextMenu={(e) => e.preventDefault()}
         className="absolute left-0 w-full h-screen grid grid-cols-2"
       >
         <div
+          onClick={() => setControl("jump", true)}
           onTouchStart={() => setControl("backward", true)}
           onTouchEnd={() => setControl("backward", false)}
         ></div>
         <div
+          onClick={() => setControl("jump", true)}
           onTouchStart={() => setControl("forward", true)}
           onTouchEnd={() => setControl("forward", false)}
         ></div>
