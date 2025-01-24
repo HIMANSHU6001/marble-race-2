@@ -115,8 +115,8 @@ const Player = () => {
      * Tilt controls
      */
     if (tilt.y !== 0) {
-      setControl("leftward", tilt.y < -0.1);
-      setControl("rightward", tilt.y > 0.1);
+      setControl("leftward", tilt.y < -0.01);
+      setControl("rightward", tilt.y > 0.01);
     }
 
     const impulseStrength = 0.6 * delta;
