@@ -1,11 +1,10 @@
 "use client";
+import Interface from "@/components/Interface";
+import React, { useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import Experience from "@/components/Experience";
-import Interface from "@/components/Interface";
 
-import React from "react";
-
-const page = () => {
+const Page = () => {
   return (
     <>
       <Canvas
@@ -24,4 +23,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

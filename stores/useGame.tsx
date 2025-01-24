@@ -11,8 +11,6 @@ const useGame = create(
       leftward: false,
       jump: false,
       setControl: (control: string, value: boolean) => {
-        console.log(control, value);
-
         set(() => ({ [control]: value }));
       },
       blocksCount: 10,
@@ -23,6 +21,8 @@ const useGame = create(
       start: () => {
         set((state: Game) => {
           if (state.phase === "ready") {
+            console.log("start");
+
             return { phase: "playing", startTime: Date.now() };
           }
           return {};

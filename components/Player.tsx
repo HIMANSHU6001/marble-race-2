@@ -37,8 +37,6 @@ const Player = () => {
     };
   }, []);
 
-
-
   const reset = () => {
     body.current.setTranslation({ x: 0, y: 0, z: 0 });
     body.current.setLinvel({ x: 0, y: 0, z: 0 });
@@ -65,7 +63,7 @@ const Player = () => {
       const rapierWorld = world;
       const ray = new rapier.Ray(origin, direction);
       const hit = rapierWorld.castRay(ray, 10, true);
-      if (hit.timeOfImpact < 0.15 && body.current)
+      if (hit?.timeOfImpact < 0.15 && body.current)
         body.current.applyImpulse({ x: 0, y: 0.5, z: 0 });
     }
   }, [jump]);
@@ -116,8 +114,10 @@ const Player = () => {
     /**
      * Tilt controls
      */
-    setControl("leftward", tilt.y < -0.1);
-    setControl("rightward", tilt.y > 0.1);
+    if (tilt.y !== 0) {
+      setControl("leftward", tilt.y < -0.1);
+      setControl("rightward", tilt.y > 0.1);
+    }
 
     const impulseStrength = 0.6 * delta;
     const torqueStrength = 0.2 * delta;

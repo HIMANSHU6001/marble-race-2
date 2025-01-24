@@ -38,8 +38,8 @@ export default function Experience() {
 
   return (
     <>
-      <Perf />
-      <OrbitControls />
+      {/* <Perf /> */}
+      {/* <OrbitControls /> */}
       <Effects />
       <color args={["#bdedfc"]} attach="background" />
       <Lights />
