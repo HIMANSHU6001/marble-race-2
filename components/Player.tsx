@@ -123,13 +123,15 @@ const Player = () => {
     /**
      * Tilt controls
      */
-    const tiltThreshold = 0.1;
-    if (Math.abs(smoothedTilt.y) > tiltThreshold) {
-      setControl("leftward", smoothedTilt.y < -tiltThreshold);
-      setControl("rightward", smoothedTilt.y > tiltThreshold);
-    } else {
-      setControl("leftward", false);
-      setControl("rightward", false);
+    if (tilt.y !== 0) {
+      const tiltThreshold = 0.1;
+      if (Math.abs(smoothedTilt.y) > tiltThreshold) {
+        setControl("leftward", smoothedTilt.y < -tiltThreshold);
+        setControl("rightward", smoothedTilt.y > tiltThreshold);
+      } else {
+        setControl("leftward", false);
+        setControl("rightward", false);
+      }
     }
 
     const impulseStrength = 0.6 * delta;

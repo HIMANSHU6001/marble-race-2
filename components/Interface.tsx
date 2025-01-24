@@ -49,7 +49,7 @@ const Interface = () => {
           else document.body.requestFullscreen();
           setSrc((prev: any) => (prev === expand ? shrink : expand));
         }}
-        className="absolute z-10 top-5 left-5 bg-black bg-opacity-20 p-1 text-center text-white"
+        className="absolute z-10 top-1 left-1 bg-black bg-opacity-20 p-1 text-center text-white"
       >
         <Image src={src} alt="shrink" />
       </button>
