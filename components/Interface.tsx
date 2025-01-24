@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import useGame from "@/stores/useGame";
 import { useRef } from "react";
 import { addEffect } from "@react-three/fiber";
-import shrink from "@/public/icons/Shrink.svg";
+import shrink from "@/public/icons/shrink.svg";
 import expand from "@/public/icons/expand.svg";
 import Image from "next/image";
 
