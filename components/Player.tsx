@@ -102,6 +102,15 @@ const Player = () => {
 
   const [smoothCameraPosition] = useState(() => new Vector3(10, 10, 10));
   const [smoothCameraTarget] = useState(() => new Vector3());
+  const [smoothedTilt, setSmoothedTilt] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const smoothingFactor = 0.1;
+    setSmoothedTilt((prev) => ({
+      x: prev.x + (tilt.x - prev.x) * smoothingFactor,
+      y: prev.y + (tilt.y - prev.y) * smoothingFactor,
+    }));
+  }, [tilt]);
 
   useFrame((state, delta) => {
     /**
@@ -114,9 +123,13 @@ const Player = () => {
     /**
      * Tilt controls
      */
-    if (tilt.y !== 0) {
-      setControl("leftward", tilt.y < -0.01);
-      setControl("rightward", tilt.y > 0.01);
+    const tiltThreshold = 0.1;
+    if (Math.abs(smoothedTilt.y) > tiltThreshold) {
+      setControl("leftward", smoothedTilt.y < -tiltThreshold);
+      setControl("rightward", smoothedTilt.y > tiltThreshold);
+    } else {
+      setControl("leftward", false);
+      setControl("rightward", false);
     }
 
     const impulseStrength = 0.6 * delta;
