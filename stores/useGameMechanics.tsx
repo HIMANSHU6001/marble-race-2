@@ -52,7 +52,7 @@ const useGame = create(
       },
       nextLevel: () => {
         set((state: Game) => {
-          if (state.phase === "end") {
+          if (state.phase === "end" && state.lives > 0) {
             if (state.level < 3) {
               return {
                 level: state.level + 1,

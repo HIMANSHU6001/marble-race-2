@@ -68,7 +68,7 @@ const Interface = () => {
       </div>
 
       {lives === 0 && (
-        <div className="absolute z-10 flex justify-center top-[40%] left-0 w-full text-white text-[80px] bg-black bg-opacity-50 pt-[10px] text-center cursor-pointer">
+        <div className="absolute z-10 flex justify-center top-[40%] left-0 w-full text-white text-[80px] bg-black bg-opacity-50 pt-[10px] text-center">
           GAME OVER
         </div>
       )}
