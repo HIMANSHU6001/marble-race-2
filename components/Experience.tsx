@@ -1,19 +1,26 @@
-import { OrbitControls } from "@react-three/drei";
+import {
+  Environment,
+  OrbitControls,
+  Reflector,
+  Stage,
+} from "@react-three/drei";
 import Lights from "./Lights";
 import Level from "./Level";
 import { Physics } from "@react-three/rapier";
 import { BlockAxe, BlockLimbo, BlockSpinner } from "./Level";
 import Player from "./Player";
 import { Perf } from "r3f-perf";
-import useGame from "@/stores/useGame";
+import useGameMechanics from "@/stores/useGameMechanics";
+import useGameControls from "@/stores/useGameControls";
 import Effects from "@/utils/Effects";
 import { useEffect } from "react";
 
 export default function Experience() {
-  const blocksCount = useGame((state: any) => state.blocksCount);
-  const blocksSeed = useGame((state: any) => state.blocksSeed);
-
-  const setControl = useGame((state: any) => state.setControl);
+  const blocksCount = useGameMechanics((state: any) => state.blocksCount);
+  const blocksSeed = useGameMechanics((state: any) => state.blocksSeed);
+  const level = useGameMechanics((state: any) => state.level);
+  
+  const setControl = useGameControls((state: any) => state.setControl);
 
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
@@ -30,22 +37,22 @@ export default function Experience() {
       if (e.code === "KeyD") setControl("rightward", false);
       if (e.code === "Space") setControl("jump", false);
     });
+
     return () => {
       window.removeEventListener("keydown", (e) => {});
       window.removeEventListener("keyup", (e) => {});
     };
   }, []);
 
-
   return (
     <>
       {/* <Perf /> */}
       {/* <OrbitControls /> */}
       <Effects />
-      <color args={["#bdedfc"]} attach="background" />
+      <color args={["#aaf5ee"]} attach="background" />
       <Lights />
-      <Physics>
-        <Level count={blocksCount} seed={blocksSeed} />
+      <Physics key={level}>
+        <Level count={blocksCount} seed={blocksSeed} level={level} />
         <Player />
       </Physics>
     </>

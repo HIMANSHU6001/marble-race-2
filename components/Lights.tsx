@@ -1,8 +1,6 @@
 // @ts-nocheck
-import { useEffect, useRef } from "react";
-import { useHelper } from "@react-three/drei";
-import { CameraHelper, DirectionalLightHelper } from "three";
 import { useFrame } from "@react-three/fiber";
+import { useRef } from "react";
 
 export default function Lights() {
   const directionalLight = useRef();
@@ -12,17 +10,6 @@ export default function Lights() {
     directionalLight.current.target.position.z = state.camera.position.z - 4;
     directionalLight.current.target.updateMatrixWorld();
   });
-
-  // Ensure helpers are correctly bound to the directional light and its shadow camera
-  // useHelper(directionalLight, DirectionalLightHelper, 1, "red");
-
-  // useEffect(() => {
-  //   if (directionalLight.current) {
-  //     const shadowCamera = directionalLight.current.shadow.camera;
-  //     const helper = new CameraHelper(shadowCamera);
-  //     directionalLight.current.add(helper);
-  //   }
-  // }, []);
 
   return (
     <>
@@ -43,4 +30,3 @@ export default function Lights() {
     </>
   );
 }
-

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import useGame from "@/stores/useGame";
+import useGameControls from "@/stores/useGameControls";
+import useGameMechanics from "@/stores/useGameMechanics";
 import { useRef } from "react";
 import { addEffect } from "@react-three/fiber";
 import shrink from "@/public/icons/shrink.svg";
@@ -9,28 +10,28 @@ import Image from "next/image";
 const Interface = () => {
   const time = useRef<HTMLDivElement>(null);
 
-  const restart = useGame((state: any) => state.restart);
-  const phase = useGame((state: any) => state.phase);
+  const lives = useGameMechanics((state: any) => state.lives);
+  const level = useGameMechanics((state: any) => state.level);
 
-  const forward = useGame((state: any) => state.forward);
-  const backward = useGame((state: any) => state.backward);
-  const rightward = useGame((state: any) => state.rightward);
-  const leftward = useGame((state: any) => state.leftward);
-  const jump = useGame((state: any) => state.jump);
-  const setControl = useGame((state: any) => state.setControl);
+  const forward = useGameControls((state: any) => state.forward);
+  const backward = useGameControls((state: any) => state.backward);
+  const rightward = useGameControls((state: any) => state.rightward);
+  const leftward = useGameControls((state: any) => state.leftward);
+  const jump = useGameControls((state: any) => state.jump);
+  const setControl = useGameControls((state: any) => state.setControl);
 
   useEffect(() => {
     const unsubscribeEffect = addEffect(() => {
-      const state = useGame.getState() as {
+      const state = useGameMechanics.getState() as {
         phase: string;
         startTime: number;
         endTime: number;
       };
-      let ela = 0;
+      let ela: number | string = 0;
       if (state.phase === "playing") ela = Date.now() - state.startTime;
       else if (state.phase === "end") ela = state.endTime - state.startTime;
       ela /= 1000;
-      ela = parseFloat(ela.toFixed(2));
+      ela = ela.toFixed(2);
       if (time.current) time.current.textContent = ela.toString();
     });
 
@@ -54,6 +55,11 @@ const Interface = () => {
         <Image src={src} alt="shrink" />
       </button>
 
+      <div className="absolute z-10 top-1 right-1 bg-black bg-opacity-20 px-2 text-xl text-center text-white">
+        <div>Lives: {lives}</div>
+        <div>Level: {level}</div>
+      </div>
+
       <div
         ref={time}
         className="absolute top-[15%] left-0 w-full text-white text-[6vh] bg-black bg-opacity-20 pt-1 text-center"
@@ -61,14 +67,9 @@ const Interface = () => {
         0.00
       </div>
 
-      {phase === "end" && (
-        <div
-          onClick={() => {
-            restart();
-          }}
-          className="absolute z-10 flex justify-center top-[40%] left-0 w-full text-white text-[80px] bg-black bg-opacity-20 pt-[10px] text-center cursor-pointer"
-        >
-          Restart
+      {lives === 0 && (
+        <div className="absolute z-10 flex justify-center top-[40%] left-0 w-full text-white text-[80px] bg-black bg-opacity-50 pt-[10px] text-center cursor-pointer">
+          GAME OVER
         </div>
       )}
 
@@ -77,7 +78,7 @@ const Interface = () => {
         <div className="flex justify-center">
           <div
             className={`w-10 h-10 m-1 border-2 border-white bg-white ${
-              forward ? "bg-opacity-100" : "bg-opacity-25"
+              forward && lives > 0 ? "bg-opacity-100" : "bg-opacity-25"
             }`}
           ></div>
         </div>
@@ -85,24 +86,24 @@ const Interface = () => {
         <div className="flex justify-center">
           <div
             className={`w-10 h-10 m-1 border-2 border-white bg-white ${
-              leftward ? "bg-opacity-100" : "bg-opacity-25"
+              leftward && lives > 0 ? "bg-opacity-100" : "bg-opacity-25"
             }`}
           ></div>
           <div
             className={`w-10 h-10 m-1 border-2 border-white bg-white ${
-              backward ? "bg-opacity-100" : "bg-opacity-25"
+              backward && lives > 0 ? "bg-opacity-100" : "bg-opacity-25"
             }`}
           ></div>
           <div
             className={`w-10 h-10 m-1 border-2 border-white bg-white ${
-              rightward ? "bg-opacity-100" : "bg-opacity-25"
+              rightward && lives > 0 ? "bg-opacity-100" : "bg-opacity-25"
             }`}
           ></div>
         </div>
         <div className="flex justify-center">
           <div
             className={`w-36 h-10 m-1 border-2 border-white bg-white large ${
-              jump ? "bg-opacity-100" : "bg-opacity-25"
+              jump && lives > 0 ? "bg-opacity-100" : "bg-opacity-25"
             }`}
           ></div>
         </div>

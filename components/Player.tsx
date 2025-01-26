@@ -4,12 +4,14 @@ import { useFrame } from "@react-three/fiber";
 import { useRapier, RigidBody } from "@react-three/rapier";
 import React, { useEffect, useRef, useState } from "react";
 import { Vector3 } from "three";
-import useGame from "@/stores/useGame";
+import useGameControls from "@/stores/useGameControls";
+import useGameMechanics from "@/stores/useGameMechanics";
 
 const Player = () => {
   const body = useRef();
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const { rapier, world } = useRapier();
+
   useEffect(() => {
     const handleOrientation = (event) => {
       const { beta, gamma } = event;
@@ -38,24 +40,34 @@ const Player = () => {
   }, []);
 
   const reset = () => {
-    body.current.setTranslation({ x: 0, y: 0, z: 0 });
-    body.current.setLinvel({ x: 0, y: 0, z: 0 });
-    body.current.setAngvel({ x: 0, y: 0, z: 0 });
+    if (body.current) {
+      try {
+        body.current.setTranslation({ x: 0, y: 0, z: 0 });
+        body.current.setLinvel({ x: 0, y: 0, z: 0 });
+        body.current.setAngvel({ x: 0, y: 0, z: 0 });
+      } catch (error) {
+        console.info(error);
+      }
+    }
+    return;
   };
 
-  const start = useGame((state) => state.start);
-  const end = useGame((state) => state.end);
-  const blocksCount = useGame((state) => state.blocksCount);
-  const restart = useGame((state) => state.restart);
-  const forward = useGame((state) => state.forward);
-  const backward = useGame((state) => state.backward);
-  const rightward = useGame((state) => state.rightward);
-  const leftward = useGame((state) => state.leftward);
-  const jump = useGame((state) => state.jump);
-  const setControl = useGame((state) => state.setControl);
+  const start = useGameMechanics((state) => state.start);
+  const end = useGameMechanics((state) => state.end);
+  const blocksCount = useGameMechanics((state) => state.blocksCount);
+  const restart = useGameMechanics((state) => state.restart);
+  const death = useGameMechanics((state) => state.death);
+  const lives = useGameMechanics((state) => state.lives);
+
+  const forward = useGameControls((state) => state.forward);
+  const backward = useGameControls((state) => state.backward);
+  const rightward = useGameControls((state) => state.rightward);
+  const leftward = useGameControls((state) => state.leftward);
+  const jump = useGameControls((state) => state.jump);
+  const setControl = useGameControls((state) => state.setControl);
 
   useEffect(() => {
-    if (jump) {
+    if (jump && body.current) {
       setControl("jump", false);
       const origin = body.current.translation();
       origin.y -= 0.31;
@@ -69,12 +81,19 @@ const Player = () => {
   }, [jump]);
 
   useEffect(() => {
-    const unsubscribePhase = useGame.subscribe(
+    const unsubscribePhase = useGameMechanics.subscribe(
       (state) => state.phase,
       (value) => {
         if (value === "ready") {
           reset();
         }
+      }
+    );
+
+    const unsubscribeLevel = useGameMechanics.subscribe(
+      (state) => state.level,
+      (value) => {
+        reset();
       }
     );
 
@@ -121,43 +140,6 @@ const Player = () => {
     const torque = { x: 0, y: 0, z: 0 };
 
     /**
-     * Tilt controls
-     */
-    if (tilt.y !== 0) {
-      const tiltThreshold = 0.1;
-      if (Math.abs(smoothedTilt.y) > tiltThreshold) {
-        setControl("leftward", smoothedTilt.y < -tiltThreshold);
-        setControl("rightward", smoothedTilt.y > tiltThreshold);
-      } else {
-        setControl("leftward", false);
-        setControl("rightward", false);
-      }
-    }
-
-    const impulseStrength = 0.6 * delta;
-    const torqueStrength = 0.2 * delta;
-
-    if (forward) {
-      impulse.z -= impulseStrength;
-      torque.x = -torqueStrength;
-    }
-    if (backward) {
-      impulse.z += impulseStrength;
-      torque.x = +torqueStrength;
-    }
-    if (leftward) {
-      impulse.x -= impulseStrength;
-      torque.z = +torqueStrength;
-    }
-    if (rightward) {
-      impulse.x += impulseStrength;
-      torque.z = -torqueStrength;
-    }
-    body.current.wakeUp();
-    body.current.applyImpulse(impulse);
-    body.current.applyTorqueImpulse(torque);
-
-    /**
      * Mobile controls
      */
 
@@ -185,12 +167,47 @@ const Player = () => {
      * Phases
      */
 
-    if (bodyPosition.z < -(blocksCount * 4 + 2)) {
-      end();
-    }
     if (bodyPosition.y < -4) {
+      death();
       restart();
     }
+
+    /**
+     * Tilt controls
+     */
+    if (tilt.y !== 0) {
+      const tiltThreshold = 0.1;
+      if (Math.abs(smoothedTilt.y) > tiltThreshold) {
+        setControl("leftward", smoothedTilt.y < -tiltThreshold);
+        setControl("rightward", smoothedTilt.y > tiltThreshold);
+      } else {
+        setControl("leftward", false);
+        setControl("rightward", false);
+      }
+    }
+
+    const impulseStrength = 0.6 * delta;
+    const torqueStrength = 0.2 * delta;
+    if (lives === 0) return;
+    if (forward) {
+      impulse.z -= impulseStrength;
+      torque.x = -torqueStrength;
+    }
+    if (backward) {
+      impulse.z += impulseStrength;
+      torque.x = +torqueStrength;
+    }
+    if (leftward) {
+      impulse.x -= impulseStrength;
+      torque.z = +torqueStrength;
+    }
+    if (rightward) {
+      impulse.x += impulseStrength;
+      torque.z = -torqueStrength;
+    }
+    body.current.wakeUp();
+    body.current.applyImpulse(impulse);
+    body.current.applyTorqueImpulse(torque);
   });
 
   return (
@@ -204,6 +221,7 @@ const Player = () => {
         ref={body}
         linearDamping={0.5}
         angularDamping={0.5}
+        name="marble"
       >
         <mesh castShadow>
           <icosahedronGeometry args={[0.3, 1]} />
