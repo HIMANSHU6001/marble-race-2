@@ -8,6 +8,7 @@ import expand from "@/public/icons/expand.svg";
 import jump_icon from "@/public/icons/Jump.svg";
 import Image from "next/image";
 import { Joystick } from "react-joystick-component";
+import { IJoystickUpdateEvent } from "react-joystick-component/build/lib/Joystick";
 
 const Interface = () => {
   const time = useRef<HTMLDivElement>(null);
@@ -50,9 +51,9 @@ const Interface = () => {
 
   const [src, setSrc] = useState(expand);
 
-  const handleJoystickMove = (e: { x: number; y: number }) => {
-    // const { angle } = data;
-    setJoystickData({ z: e.y, x: e.x });
+  const handleJoystickMove = (event: IJoystickUpdateEvent) => {
+    const { x, y } = event;
+    setJoystickData({ x: x ?? 0, y: y ?? 0 });
   };
 
   const handleJoystickEnd = () => {
