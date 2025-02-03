@@ -5,7 +5,11 @@ import { useRef } from "react";
 import { addEffect } from "@react-three/fiber";
 import shrink from "@/public/icons/shrink.svg";
 import expand from "@/public/icons/expand.svg";
+import jump_icon from "@/public/icons/Jump.svg";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const Nipple = dynamic(() => import("react-nipple"), { ssr: false });
 
 const Interface = () => {
   const time = useRef<HTMLDivElement>(null);
@@ -18,6 +22,12 @@ const Interface = () => {
   const rightward = useGameControls((state: any) => state.rightward);
   const leftward = useGameControls((state: any) => state.leftward);
   const jump = useGameControls((state: any) => state.jump);
+
+  const joystickData = useGameControls((state: any) => state.joystickData);
+  const setJoystickData = useGameControls(
+    (state: any) => state.setJoystickData
+  );
+
   const setControl = useGameControls((state: any) => state.setControl);
 
   useEffect(() => {
@@ -41,6 +51,15 @@ const Interface = () => {
   }, []);
 
   const [src, setSrc] = useState(expand);
+
+  const handleJoystickMove = (evt: any, data: { angle: any }) => {
+    const { angle } = data;
+    setJoystickData({ z: Math.sin(angle.radian), x: Math.cos(angle.radian) });
+  };
+
+  const handleJoystickEnd = () => {
+    setJoystickData({ z: 0, x: 0 });
+  };
 
   return (
     <div className="fixed top-0 left-0 w-full h-full font-bebas-neue not-italic">
@@ -111,19 +130,29 @@ const Interface = () => {
 
       {/* Mobile controls */}
       <div
+        onClick={() => setControl("jump", true)}
         onContextMenu={(e) => e.preventDefault()}
-        className="absolute left-0 w-full h-screen grid grid-cols-2 md:hidden"
+        className="absolute right-5 bottom-5 px-5 py-10 md:hidden rounded-full bg-black bg-opacity-50"
       >
-        <div
-          onClick={() => setControl("jump", true)}
-          onTouchStart={() => setControl("backward", true)}
-          onTouchEnd={() => setControl("backward", false)}
-        ></div>
-        <div
-          onClick={() => setControl("jump", true)}
-          onTouchStart={() => setControl("forward", true)}
-          onTouchEnd={() => setControl("forward", false)}
-        ></div>
+        <Image src={jump_icon} alt="jump" />
+      </div>
+      <div className="md:hidden">
+        <Nipple
+          options={{
+            mode: "static",
+            position: { bottom: "50px", left: "50px" },
+            size: 100,
+          }}
+          style={{
+            width: 100,
+            height: 100,
+            position: "absolute",
+            bottom: "50px",
+            left: "50px",
+          }}
+          onMove={handleJoystickMove}
+          onEnd={handleJoystickEnd}
+        />
       </div>
     </div>
   );

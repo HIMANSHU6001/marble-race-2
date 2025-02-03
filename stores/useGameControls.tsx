@@ -9,6 +9,10 @@ const useGame = create(
       rightward: false,
       leftward: false,
       jump: false,
+      joystickData: { z: 0, x: 0 },
+      setJoystickData: (data: { x: number; z: number }) => {
+        set(() => ({ joystickData: data }));
+      },
       setControl: (control: string, value: boolean) => {
         set(() => ({ [control]: value }));
       },

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { DeviceOrientationControls } from "@react-three/drei";
+
 import { useFrame } from "@react-three/fiber";
 import { useRapier, RigidBody } from "@react-three/rapier";
 import React, { useEffect, useRef, useState } from "react";
@@ -9,35 +9,7 @@ import useGameMechanics from "@/stores/useGameMechanics";
 
 const Player = () => {
   const body = useRef();
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const { rapier, world } = useRapier();
-
-  useEffect(() => {
-    const handleOrientation = (event) => {
-      const { beta, gamma } = event;
-      setTilt({
-        x: gamma / 90,
-        y: beta / 90,
-      });
-    };
-    if (typeof DeviceMotionEvent.requestPermission === "function") {
-      DeviceMotionEvent.requestPermission()
-        .then((response) => {
-          if (response === "granted") {
-            console.log("Permission granted for device orientation");
-          } else {
-            console.log("Permission denied");
-          }
-        })
-        .catch(console.error);
-    }
-
-    window.addEventListener("deviceorientation", handleOrientation);
-
-    return () => {
-      window.removeEventListener("deviceorientation", handleOrientation);
-    };
-  }, []);
 
   const reset = () => {
     if (body.current) {
@@ -64,6 +36,12 @@ const Player = () => {
   const rightward = useGameControls((state) => state.rightward);
   const leftward = useGameControls((state) => state.leftward);
   const jump = useGameControls((state) => state.jump);
+
+  const joystickData = useGameControls((state: any) => state.joystickData);
+  const setJoystickData = useGameControls(
+    (state: any) => state.setJoystickData
+  );
+
   const setControl = useGameControls((state) => state.setControl);
 
   useEffect(() => {
@@ -99,17 +77,25 @@ const Player = () => {
 
     window.addEventListener("keydown", (e) => {
       start();
-      if (e.code === "KeyW") setControl("forward", true);
-      if (e.code === "KeyA") setControl("leftward", true);
-      if (e.code === "KeyS") setControl("backward", true);
-      if (e.code === "KeyD") setControl("rightward", true);
+      if (e.code === "KeyW" || e.code === "ArrowUp")
+        setControl("forward", true);
+      if (e.code === "KeyA" || e.code === "ArrowLeft")
+        setControl("leftward", true);
+      if (e.code === "KeyS" || e.code === "ArrowDown")
+        setControl("backward", true);
+      if (e.code === "KeyD" || e.code === "ArrowRight")
+        setControl("rightward", true);
       if (e.code === "Space") setControl("jump", true);
     });
     window.addEventListener("keyup", (e) => {
-      if (e.code === "KeyW") setControl("forward", false);
-      if (e.code === "KeyA") setControl("leftward", false);
-      if (e.code === "KeyS") setControl("backward", false);
-      if (e.code === "KeyD") setControl("rightward", false);
+      if (e.code === "KeyW" || e.code === "ArrowUp")
+        setControl("forward", false);
+      if (e.code === "KeyA" || e.code === "ArrowLeft")
+        setControl("leftward", false);
+      if (e.code === "KeyS" || e.code === "ArrowDown")
+        setControl("backward", false);
+      if (e.code === "KeyD" || e.code === "ArrowRight")
+        setControl("rightward", false);
     });
 
     return () => {
@@ -121,15 +107,6 @@ const Player = () => {
 
   const [smoothCameraPosition] = useState(() => new Vector3(10, 10, 10));
   const [smoothCameraTarget] = useState(() => new Vector3());
-  const [smoothedTilt, setSmoothedTilt] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const smoothingFactor = 0.1;
-    setSmoothedTilt((prev) => ({
-      x: prev.x + (tilt.x - prev.x) * smoothingFactor,
-      y: prev.y + (tilt.y - prev.y) * smoothingFactor,
-    }));
-  }, [tilt]);
 
   useFrame((state, delta) => {
     /**
@@ -140,8 +117,12 @@ const Player = () => {
     const torque = { x: 0, y: 0, z: 0 };
 
     /**
-     * Mobile controls
+     * joystick controls
      */
+    if (joystickData && (joystickData.x !== 0 || joystickData.z !== 0)) {
+      impulse.x = joystickData.x * delta;
+      impulse.z = -joystickData.z * delta;
+    }
 
     /**
      * Camera
@@ -172,20 +153,6 @@ const Player = () => {
       restart();
     }
 
-    /**
-     * Tilt controls
-     */
-    if (tilt.y !== 0) {
-      const tiltThreshold = 0.1;
-      if (Math.abs(smoothedTilt.y) > tiltThreshold) {
-        setControl("leftward", smoothedTilt.y < -tiltThreshold);
-        setControl("rightward", smoothedTilt.y > tiltThreshold);
-      } else {
-        setControl("leftward", false);
-        setControl("rightward", false);
-      }
-    }
-
     const impulseStrength = 0.6 * delta;
     const torqueStrength = 0.2 * delta;
     if (lives === 0) return;
@@ -212,7 +179,6 @@ const Player = () => {
 
   return (
     <>
-      <DeviceOrientationControls />
       <RigidBody
         colliders="ball"
         restitution={0.2}

@@ -7,7 +7,6 @@ import {
 import Lights from "./Lights";
 import Level from "./Level";
 import { Physics } from "@react-three/rapier";
-import { BlockAxe, BlockLimbo, BlockSpinner } from "./Level";
 import Player from "./Player";
 import { Perf } from "r3f-perf";
 import useGameMechanics from "@/stores/useGameMechanics";
@@ -19,22 +18,30 @@ export default function Experience() {
   const blocksCount = useGameMechanics((state: any) => state.blocksCount);
   const blocksSeed = useGameMechanics((state: any) => state.blocksSeed);
   const level = useGameMechanics((state: any) => state.level);
-  
+
   const setControl = useGameControls((state: any) => state.setControl);
 
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
-      if (e.code === "KeyW") setControl("forward", true);
-      if (e.code === "KeyA") setControl("leftward", true);
-      if (e.code === "KeyS") setControl("backward", true);
-      if (e.code === "KeyD") setControl("rightward", true);
+      if (e.code === "KeyW" || e.code === "ArrowUp")
+        setControl("forward", true);
+      if (e.code === "KeyA" || e.code === "ArrowLeft")
+        setControl("leftward", true);
+      if (e.code === "KeyS" || e.code === "ArrowDown")
+        setControl("backward", true);
+      if (e.code === "KeyD" || e.code === "ArrowRight")
+        setControl("rightward", true);
       if (e.code === "Space") setControl("jump", true);
     });
     window.addEventListener("keyup", (e) => {
-      if (e.code === "KeyW") setControl("forward", false);
-      if (e.code === "KeyA") setControl("leftward", false);
-      if (e.code === "KeyS") setControl("backward", false);
-      if (e.code === "KeyD") setControl("rightward", false);
+      if (e.code === "KeyW" || e.code === "ArrowUp")
+        setControl("forward", false);
+      if (e.code === "KeyA" || e.code === "ArrowLeft")
+        setControl("leftward", false);
+      if (e.code === "KeyS" || e.code === "ArrowDown")
+        setControl("backward", false);
+      if (e.code === "KeyD" || e.code === "ArrowRight")
+        setControl("rightward", false);
       if (e.code === "Space") setControl("jump", false);
     });
 

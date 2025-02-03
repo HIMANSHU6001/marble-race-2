@@ -1,6 +1,6 @@
 "use client";
 import Interface from "@/components/Interface";
-import React from "react";
+import React, { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import Experience from "@/components/Experience";
 
