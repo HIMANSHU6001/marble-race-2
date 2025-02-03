@@ -53,11 +53,11 @@ const Interface = () => {
 
   const handleJoystickMove = (event: IJoystickUpdateEvent) => {
     const { x, y } = event;
-    setJoystickData({ x: x ?? 0, y: y ?? 0 });
+    setJoystickData({ z: y, x: x });
   };
 
   const handleJoystickEnd = () => {
-    setJoystickData({ z: 0, x: 0 });
+    setJoystickData({ x: 0, z: 0 });
   };
 
   return (
