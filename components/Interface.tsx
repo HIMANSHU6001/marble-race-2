@@ -7,9 +7,7 @@ import shrink from "@/public/icons/shrink.svg";
 import expand from "@/public/icons/expand.svg";
 import jump_icon from "@/public/icons/Jump.svg";
 import Image from "next/image";
-import dynamic from "next/dynamic";
-
-const Nipple = dynamic(() => import("react-nipple"), { ssr: false });
+import { Joystick } from "react-joystick-component";
 
 const Interface = () => {
   const time = useRef<HTMLDivElement>(null);
@@ -52,9 +50,9 @@ const Interface = () => {
 
   const [src, setSrc] = useState(expand);
 
-  const handleJoystickMove = (evt: any, data: { angle: any }) => {
-    const { angle } = data;
-    setJoystickData({ z: Math.sin(angle.radian), x: Math.cos(angle.radian) });
+  const handleJoystickMove = (e: { x: number; y: number }) => {
+    // const { angle } = data;
+    setJoystickData({ z: e.y, x: e.x });
   };
 
   const handleJoystickEnd = () => {
@@ -136,22 +134,12 @@ const Interface = () => {
       >
         <Image src={jump_icon} alt="jump" />
       </div>
-      <div className="md:hidden">
-        <Nipple
-          options={{
-            mode: "static",
-            position: { bottom: "50px", left: "50px" },
-            size: 100,
-          }}
-          style={{
-            width: 100,
-            height: 100,
-            position: "absolute",
-            bottom: "50px",
-            left: "50px",
-          }}
-          onMove={handleJoystickMove}
-          onEnd={handleJoystickEnd}
+      <div className="md:hidden absolute bottom-5 left-5">
+        <Joystick
+          size={100}
+          stickSize={50}
+          move={handleJoystickMove}
+          stop={handleJoystickEnd}
         />
       </div>
     </div>
